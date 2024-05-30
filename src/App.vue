@@ -1,6 +1,12 @@
 <template>
   <main>
-    <Filters :filters="filters" :applyFilters="applyFilters" />
+    <Filters
+      :filters="filters"
+      :currentPage="currentPage"
+      :applyFilters="applyFilters"
+      :resetFilters="resetFilters"
+      :isCharacterFound="isCharacterFound"
+    />
     <div v-if="isLoading" class="loading">Ищем персонажей...</div>
     <div v-if="!isCharacterFound" class="not-found">
       Персонажа с такими данными не нашлось :(
@@ -47,6 +53,7 @@ const filters = ref({
 
 const isLoading = ref(false);
 const isCharacterFound = ref(true);
+const prevUrl = ref("");
 
 const buildUrlWithParams = (pageNumber, filters) => {
   const params = new URLSearchParams({ page: pageNumber });
@@ -75,6 +82,10 @@ const fetchCharacter = async (pageNumber = 1, filters = {}) => {
 
   try {
     const urlWithParams = buildUrlWithParams(pageNumber, filters);
+    if (prevUrl.value === urlWithParams) {
+      return;
+    }
+
     const response = await fetch(urlWithParams);
 
     if (!response.ok) {
@@ -83,6 +94,7 @@ const fetchCharacter = async (pageNumber = 1, filters = {}) => {
         characters.value = [];
         totalPages.value = 0;
         isCharacterFound.value = false;
+        prevUrl.value = "";
         return;
       }
     }
@@ -113,8 +125,9 @@ const fetchCharacter = async (pageNumber = 1, filters = {}) => {
       firstSeenIn: episodes[index].name,
     }));
     totalPages.value = info.pages;
+    prevUrl.value = urlWithParams;
   } catch (error) {
-    console.error("There has been a problem with your fetch operation:", error);
+    console.error("Failed fetch operation:", error);
   } finally {
     isLoading.value = false;
   }
@@ -135,6 +148,16 @@ const goToPage = (page) => {
 const applyFilters = () => {
   fetchCharacter(1, filters.value);
   currentPage.value = 1;
+};
+
+const resetFilters = () => {
+  filters.value = {
+    name: "",
+    status: "",
+  };
+  fetchCharacter(1);
+  currentPage.value = 1;
+  isCharacterFound.value = true;
 };
 
 onMounted(() => fetchCharacter(1, filters.value));
@@ -176,5 +199,13 @@ main {
   font-size: 23px;
   align-self: center;
   min-height: calc(100vh - 50px);
+}
+
+@media (max-width: 40.625em) {
+  .not-found {
+    text-align: center;
+    display: block;
+    width: 90%;
+  }
 }
 </style>

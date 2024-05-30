@@ -1,10 +1,14 @@
 <script setup>
-import { defineProps, ref, computed } from "vue";
+import { defineProps, ref, computed, onMounted, watch } from "vue";
 
 const props = defineProps({
   filters: Object,
+  currentPage: Number,
+  isCharacterFound: Boolean,
   applyFilters: Function,
+  resetFilters: Function,
 });
+
 
 const nameInput = ref(null);
 const statusInput = ref(null);
@@ -18,6 +22,23 @@ const focusSearchButton = () => {
     searchButton.value.focus();
   }
 };
+
+const focusInput = () => {
+  if (nameInput.value) {
+    nameInput.value.focus();
+  }
+};
+
+onMounted(() => {
+  if (nameInput.value) {
+    nameInput.value.focus();
+  }
+});
+
+watch([() => props.currentPage, () => props.filters], () => {
+  focusInput();
+});
+
 </script>
 
 <template>
@@ -27,29 +48,44 @@ const focusSearchButton = () => {
         ref="nameInput"
         v-model="props.filters.name"
         type="text"
-        placeholder="Имя"
+        placeholder="Name"
         class="filter-input"
+        :class="{ 'disabled-input': !props.isCharacterFound }"
         @keydown.enter="focusSearchButton"
       />
-      <input
-        ref="statusInput"
-        v-model="props.filters.status"
-        type="text"
-        placeholder="Статус"
-        class="filter-input"
-        @keydown.enter="focusSearchButton"
-      />
+      <select
+          id="status-select"
+          ref="statusInput"
+          v-model="props.filters.status"
+          class="filter-select"
+          :disabled="!props.isCharacterFound"
+          @change="focusSearchButton"
+      >
+        <option value="" disabled selected>Status</option>
+        <option value="alive">Alive</option>
+        <option value="unknown">Unknown</option>
+        <option value="dead">Dead</option>
+      </select>
     </div>
     <div class="button-wrapper">
       <button
         ref="searchButton"
         type="button"
         class="search-button"
-        :disabled="isFiltersEmpty"
-        :class="{ 'disabled-button': isFiltersEmpty }"
+        :disabled="isFiltersEmpty || !props.isCharacterFound"
+        :class="{ 'disabled-button': isFiltersEmpty || !props.isCharacterFound }"
         @click="props.applyFilters"
       >
-        Поиск
+        Search
+      </button>
+      <button
+         type="button"
+         class="reset-button"
+         :disabled="isFiltersEmpty"
+         :class="{ 'disabled-button': isFiltersEmpty }"
+         @click="props.resetFilters"
+      >
+        Reset
       </button>
     </div>
   </div>
@@ -59,6 +95,7 @@ const focusSearchButton = () => {
 .filters {
   display: flex;
   gap: 5px;
+  margin-left: 3%;
   justify-content: center;
   width: 100%;
   margin-top: 30px;
@@ -67,7 +104,7 @@ const focusSearchButton = () => {
 .filters-inputs {
   display: flex;
   gap: 5px;
-  width: 75%;
+  width: 60%;
   height: 30px;
 }
 
@@ -89,10 +126,22 @@ const focusSearchButton = () => {
   border-color: rgb(255, 255, 255);
 }
 
+.disabled-input {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.filters .filter-select {
+  color: rgb(255, 255, 255);
+  background: rgb(60, 62, 68);
+  border-radius: 3px;
+  width: 25%
+}
+
 .button-wrapper {
   display: flex;
   gap: 5px;
-  width: 10%;
+  width: 30%;
 }
 
 .button-wrapper button {
@@ -106,6 +155,22 @@ const focusSearchButton = () => {
 
 .button-wrapper .search-button {
   background: #179361;
+  width: 30%;
+  padding: 5px;
+}
+
+.button-wrapper .reset-button {
+  background: #a23737;
+  width: 30%;
+}
+
+.button-wrapper .reset-button:hover {
+  background: #DC4F4F;
+}
+
+.button-wrapper .reset-button.disabled-button:hover {
+  background: #a23737;
+  cursor: auto;
 }
 
 .button-wrapper button.disabled-button {
@@ -126,6 +191,7 @@ const focusSearchButton = () => {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    padding-left: 3%;
   }
 
   .filters-inputs {
@@ -134,9 +200,19 @@ const focusSearchButton = () => {
     gap: 7px;
   }
 
+  .filters .filter-select {
+    width: 100%
+  }
+
   .button-wrapper {
-    width: 40%;
+    width: 80%;
     height: 30px;
+    justify-content: flex-start;
+  }
+
+  .button-wrapper .reset-button,
+  .button-wrapper .search-button {
+    width: 50%
   }
 }
 </style>
