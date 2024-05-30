@@ -27,7 +27,3 @@ Run the project:
 npm run dev
 ```
 
-You can use ```npm run linter``` to run the code linting check.
-
-
-
