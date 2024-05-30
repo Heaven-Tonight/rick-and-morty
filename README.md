@@ -2,7 +2,7 @@
 
 ## Description
 
-Web app allows users to search for and view character cards from the animated series "Rick & Morty".
+[Rick&Morty App](https://rick-and-morty-pied-ten.vercel.app/) allows users to search for and view character cards from the animated series "Rick & Morty".
 
 By default, a certain number of character cards (e.g., 20) are displayed on the page.
 
@@ -14,7 +14,11 @@ Character statuses can include "alive", "dead", or "unknown".
 
 ## Installation
 
-Clone the project by using the web URL.
+Clone the project by using the web URL:
+
+```angular2html
+git clone https://github.com/Heaven-Tonight/rick-and-morty.git
+```
 
 Install dependencies:
 ```
