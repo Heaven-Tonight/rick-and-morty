@@ -7,9 +7,9 @@
       :resetFilters="resetFilters"
       :isCharacterFound="isCharacterFound"
     />
-    <div v-if="isLoading" class="loading">Ищем персонажей...</div>
+    <div v-if="isLoading" class="loading">Looking for characters...</div>
     <div v-if="!isCharacterFound" class="not-found">
-      Персонажа с такими данными не нашлось :(
+      No character was found :(
     </div>
     <div v-else class="content-wrapper">
       <div class="card-wrapper">
