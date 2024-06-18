@@ -17,7 +17,7 @@ Character statuses can include "alive", "dead", or "unknown".
 Clone the project by using the web URL:
 
 ```angular2html
-git clone https://github.com/Heaven-Tonight/rick-and-morty.git
+git clone https://github.com/mad-chameleon/rick-and-morty.git
 ```
 
 Install dependencies:
